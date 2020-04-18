@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,7 +19,13 @@ public class Player : MonoBehaviour
     public float speed = 5;
 
     public GameObject gfx;
-    public GameObject bullet;
+
+
+    public Weapon weapon;
+    public bool reloading;
+    public int ammoLeft = 0;
+    private float shootCooldown = 0f;
+
 
     private Vector3 mousePoint;
     [System.NonSerialized]
@@ -44,15 +51,38 @@ public class Player : MonoBehaviour
         mousepointFlattened = new Vector3(mousePoint.x, transform.position.y, mousePoint.z);
         gfx.transform.LookAt(mousepointFlattened,transform.up);
         
-        if(Input.GetButtonDown("Fire1"))
+        if(Input.GetButton("Fire1"))
         if(/*hit.collider.gameObject.tag == "Enemy"*/ true)
         {
             Shoot();
         }
+
+        UpdateGUI();
+    }
+
+    private void UpdateGUI()
+    {
+        GUIManager.instance.UpdateGUI();
     }
 
     private void Shoot()
     {
-        Instantiate(bullet, transform.position, gfx.transform.localRotation);
+        Debug.Log("Shoot called");
+        shootCooldown -= Time.deltaTime;
+        if (shootCooldown < 0)
+        {
+            shootCooldown = weapon.fireRate;
+            Instantiate(weapon.bullet, transform.position, gfx.transform.localRotation);
+            reloading = false;
+            ammoLeft--;
+            if (ammoLeft <= 0)
+            {
+                Debug.Log("Reloading");
+                shootCooldown += weapon.reloadTime;
+                ammoLeft = weapon.ammo;
+                reloading = true;
+            }
+        }
+
     }
 }
