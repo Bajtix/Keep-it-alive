@@ -9,5 +9,12 @@ public class Weapon : ScriptableObject
     public int ammo;
     public float fireRate;
     public float reloadTime;
+    public float speedDown;
+
+    public float bulletSpeed;
+    public float bulletDamage;
+    public float bulletLastTime;
+
     public GameObject bullet;
+
 }

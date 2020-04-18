@@ -22,13 +22,18 @@ public class Player : MonoBehaviour
 
 
     public Weapon weapon;
+
+    [NonSerialized]
     public bool reloading;
+    [NonSerialized]
     public int ammoLeft = 0;
-    private float shootCooldown = 0f;
+    [NonSerialized]
+    public float shootCooldown = 0f;
 
 
     private Vector3 mousePoint;
-    [System.NonSerialized]
+
+    [NonSerialized]
     public Vector3 mousepointFlattened;
 
     private void Start()
@@ -50,14 +55,15 @@ public class Player : MonoBehaviour
         mousePoint = hit.point;
         mousepointFlattened = new Vector3(mousePoint.x, transform.position.y, mousePoint.z);
         gfx.transform.LookAt(mousepointFlattened,transform.up);
-        
-        if(Input.GetButton("Fire1"))
-        if(/*hit.collider.gameObject.tag == "Enemy"*/ true)
-        {
+
+        if (Input.GetButton("Fire1"))
             Shoot();
-        }
+        if (Input.GetButtonDown("Fire2"))
+            Reload();
 
         UpdateGUI();
+
+        shootCooldown -= Time.deltaTime;
     }
 
     private void UpdateGUI()
@@ -68,21 +74,29 @@ public class Player : MonoBehaviour
     private void Shoot()
     {
         Debug.Log("Shoot called");
-        shootCooldown -= Time.deltaTime;
+        
         if (shootCooldown < 0)
         {
             shootCooldown = weapon.fireRate;
-            Instantiate(weapon.bullet, transform.position, gfx.transform.localRotation);
+            Bullet.Shoot(transform.position, gfx.transform.localRotation, weapon, Bullet.BulletType.Friendly);
             reloading = false;
             ammoLeft--;
             if (ammoLeft <= 0)
             {
-                Debug.Log("Reloading");
-                shootCooldown += weapon.reloadTime;
-                ammoLeft = weapon.ammo;
-                reloading = true;
+                Reload();
             }
         }
 
+    }
+
+    private void Reload()
+    {
+        if (!reloading)
+        {
+            Debug.Log("Reloading");
+            shootCooldown += weapon.reloadTime;
+            ammoLeft = weapon.ammo;
+            reloading = true;
+        }
     }
 }

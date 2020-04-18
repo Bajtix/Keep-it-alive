@@ -22,6 +22,11 @@ public class GUIManager : MonoBehaviour
         if (!Player.instance.reloading)
             ammo.text = $"{Player.instance.ammoLeft}/{Player.instance.weapon.ammo}";
         else
-            ammo.text = "RLD..";
+        {
+            if (Player.instance.shootCooldown > 0)
+                ammo.text = $"Reloading... {Player.instance.shootCooldown.ToString("0.0")}s";
+            else
+                ammo.text = $"{Player.instance.ammoLeft}/{Player.instance.weapon.ammo}";
+        }
     }
 }
