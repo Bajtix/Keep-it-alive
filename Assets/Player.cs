@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
 
     private CharacterController controller;
     public float speed = 5;
+    public float maxHp = 50;
 
     public GameObject gfx;
 
@@ -29,7 +30,10 @@ public class Player : MonoBehaviour
     public int ammoLeft = 0;
     [NonSerialized]
     public float shootCooldown = 0f;
+    [NonSerialized]
+    public float hp = 0;
 
+    private float actualSpeed;
 
     private Vector3 mousePoint;
 
@@ -39,15 +43,15 @@ public class Player : MonoBehaviour
     private void Start()
     {
         controller = GetComponent<CharacterController>();
+        hp = maxHp;
+        ammoLeft = weapon.ammo;
+        actualSpeed = speed;
     }
 
     private void Update()
     {
-
+        actualSpeed = speed;
         
-        Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * Time.deltaTime * speed;
-        if (!controller.isGrounded) movement.y = -1; else movement.y = 0;
-        controller.Move(movement);
 
         Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -63,6 +67,11 @@ public class Player : MonoBehaviour
 
         UpdateGUI();
 
+        Debug.Log("Actual Speed:" + actualSpeed);
+        Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * Time.deltaTime * actualSpeed;
+        if (!controller.isGrounded) movement.y = -1; else movement.y = 0;
+        controller.Move(movement);
+
         shootCooldown -= Time.deltaTime;
     }
 
@@ -75,9 +84,13 @@ public class Player : MonoBehaviour
     {
         Debug.Log("Shoot called");
         
+        if(!reloading)
+            actualSpeed = speed - weapon.speedDown;
+
         if (shootCooldown < 0)
         {
             shootCooldown = weapon.fireRate;
+            Sound(10);
             Bullet.Shoot(transform.position, gfx.transform.localRotation, weapon, Bullet.BulletType.Friendly);
             reloading = false;
             ammoLeft--;
@@ -97,6 +110,25 @@ public class Player : MonoBehaviour
             shootCooldown += weapon.reloadTime;
             ammoLeft = weapon.ammo;
             reloading = true;
+        }
+    }
+
+    public void Damage(float amount)
+    {
+        Debug.Log($"Player damaged by {amount} [{hp}/{maxHp}");
+        hp -= amount;
+    }
+
+    public void Sound(float loudness)
+    {
+        foreach(GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            int finalmask = ~((1 << 10) | (1 << 11)); //create layermask for player and enemy and invert it
+            if (Vector3.Distance(enemy.transform.position,transform.position) <= loudness && !Physics.Linecast(transform.position, enemy.transform.position, finalmask))
+            {
+                enemy.GetComponent<Enemy>().lastNoiseLocation = transform.position;
+                enemy.GetComponent<Enemy>().Heard();
+            }
         }
     }
 }

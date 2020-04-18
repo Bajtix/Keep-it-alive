@@ -64,16 +64,22 @@ public class Bullet : MonoBehaviour
         if (collision.collider.tag == "Enemy")
             collision.collider.GetComponent<Enemy>().Damaged(damage);
 
+        if (collision.collider.tag == "Player")
+            collision.collider.GetComponent<Player>().Damage(damage);
+
         Destroy(gameObject);
     }
 
     public static void Shoot(Vector3 position, Quaternion direction, Weapon from, BulletType bType)
     {
-        Bullet b = Instantiate(from.bullet, position, direction).GetComponent<Bullet>();
-        b.damage = from.bulletDamage;
-        b.speed = from.bulletSpeed;
-        b.lastTime = from.bulletLastTime;
-        b.bulletType = bType;
-        b.Apply();
+        for (int i = 0; i < from.bulletCount; i++)
+        {
+            Bullet b = Instantiate(from.bullet, position + new Vector3(0.1f, 0.1f, 0.1f) * Random.Range(-from.muzzleSize, from.muzzleSize), direction * Quaternion.Euler(new Vector3(0f, 10f, 0f) * Random.Range(-from.muzzleSize, from.muzzleSize))).GetComponent<Bullet>();
+            b.damage = from.bulletDamage;
+            b.speed = from.bulletSpeed;
+            b.lastTime = from.bulletLastTime;
+            b.bulletType = bType;
+            b.Apply();
+        }       
     }
 }

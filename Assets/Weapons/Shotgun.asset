@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98517912148965d4a8a5860cb85218c7, type: 3}
-  m_Name: Minigun
+  m_Name: Shotgun
   m_EditorClassIdentifier: 
-  weaponName: Minigun
-  ammo: 360
-  fireRate: 0.1
-  reloadTime: 10
-  speedDown: 3
-  muzzleSize: 5
-  bulletCount: 2
+  weaponName: Shotgun
+  ammo: 3
+  fireRate: 1
+  reloadTime: 3
+  speedDown: 100
+  muzzleSize: 2
+  bulletCount: 32
   bulletSpeed: 10
-  bulletDamage: 1
-  bulletLastTime: 3
+  bulletDamage: 0.5
+  bulletLastTime: 10
   bullet: {fileID: 4236822026102242758, guid: 2569cd90124f02d4b99183aec98f5f6d, type: 3}

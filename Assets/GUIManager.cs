@@ -6,6 +6,7 @@ using UnityEngine;
 public class GUIManager : MonoBehaviour
 {
     public TextMeshProUGUI ammo;
+    public TextMeshProUGUI hp;
 
     public static GUIManager instance;
 
@@ -28,5 +29,12 @@ public class GUIManager : MonoBehaviour
             else
                 ammo.text = $"{Player.instance.ammoLeft}/{Player.instance.weapon.ammo}";
         }
+
+        if (Player.instance.hp > 0)
+        {
+            hp.text = $"{Player.instance.hp}|{Player.instance.maxHp} HP";
+        }
+        else
+            hp.text = "Wait! You are dead!";
     }
 }

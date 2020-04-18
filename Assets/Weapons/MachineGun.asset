@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: AK 47
   ammo: 30
-  fireRate: 0.1
+  fireRate: 0.2
   reloadTime: 4
-  speedDown: 1
-  bulletSpeed: 100
+  speedDown: 3
+  muzzleSize: 1
+  bulletCount: 1
+  bulletSpeed: 8
   bulletDamage: 1
   bulletLastTime: 1
   bullet: {fileID: 4236822026102242758, guid: 2569cd90124f02d4b99183aec98f5f6d, type: 3}
