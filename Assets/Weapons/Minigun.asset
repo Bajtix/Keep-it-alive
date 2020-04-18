@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98517912148965d4a8a5860cb85218c7, type: 3}
-  m_Name: MachineGun
+  m_Name: Minigun
   m_EditorClassIdentifier: 
-  weaponName: AK 47
-  ammo: 30
+  weaponName: Minigun
+  ammo: 360
   fireRate: 0.1
-  reloadTime: 4
+  reloadTime: 10
   speedDown: 1
-  bulletSpeed: 100
+  bulletSpeed: 10
   bulletDamage: 1
-  bulletLastTime: 1
+  bulletLastTime: 3
   bullet: {fileID: 4236822026102242758, guid: 2569cd90124f02d4b99183aec98f5f6d, type: 3}

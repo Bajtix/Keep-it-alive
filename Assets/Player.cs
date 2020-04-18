@@ -78,7 +78,7 @@ public class Player : MonoBehaviour
         if (shootCooldown < 0)
         {
             shootCooldown = weapon.fireRate;
-            Instantiate(weapon.bullet, transform.position, gfx.transform.localRotation);
+            Bullet.Shoot(transform.position, gfx.transform.localRotation, weapon, Bullet.BulletType.Friendly);
             reloading = false;
             ammoLeft--;
             if (ammoLeft <= 0)

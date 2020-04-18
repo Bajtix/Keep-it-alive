@@ -9,14 +9,14 @@ public class Enemy : MonoBehaviour
 {
     private NavMeshAgent agent;
     public GameObject player;
-    public GameObject bullet;
+    public Weapon weapon;
     public float attackDistance;
     public float stopDistance;
     public float angularSpeed;
     public float speed;
     public float maxHealth;
 
-
+    private int ammo = 0;
     private float coolDown;
     [System.NonSerialized]
     public float health;
@@ -46,8 +46,14 @@ public class Enemy : MonoBehaviour
         coolDown--;
         if (coolDown < 0)
         {
-            Instantiate(bullet, transform.position, transform.rotation);
-            coolDown = 0.2f / Time.deltaTime;
+            Bullet.Shoot(transform.position, transform.localRotation, weapon, Bullet.BulletType.Enemy);
+            ammo--;
+            coolDown = weapon.fireRate / Time.deltaTime;
+
+            if(ammo <= 0)
+            {
+                coolDown = weapon.reloadTime;   
+            }
         }
     }
 
