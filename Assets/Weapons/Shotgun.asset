@@ -19,6 +19,7 @@ MonoBehaviour:
   speedDown: 100
   muzzleSize: 2
   bulletCount: 32
+  loudness: 10
   bulletSpeed: 10
   bulletDamage: 0.5
   bulletLastTime: 10

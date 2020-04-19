@@ -21,6 +21,7 @@ public class Enemy : MonoBehaviour
     public float aimSpeed = 2;
     public float aimPrecission = 1;
     public float viewDistance = 20;
+    public float FOV = 60;
 
     [NonSerialized]
     public Vector3 lastNoiseLocation;
@@ -57,7 +58,7 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-
+        lookDirection = transform.eulerAngles.y * Mathf.Deg2Rad;
         agent.speed = actualSpeed;
 
         if (status == AttentionStatus.Wander)
@@ -81,6 +82,7 @@ public class Enemy : MonoBehaviour
         {
             reloading = false;
             Bullet.Shoot(transform.position, transform.localRotation, weapon, Bullet.BulletType.Enemy);
+            Utils.Sound(weapon.loudness, transform.position);
             ammo--;
             coolDown = weapon.fireRate;
 
@@ -113,7 +115,7 @@ public class Enemy : MonoBehaviour
 
         return !(has_neg && has_pos);
     }
-
+    float lookDirection = 0;
     public virtual void WanderMode()
     {
         actualSpeed = speed / 2;
@@ -121,8 +123,8 @@ public class Enemy : MonoBehaviour
         if (agent.velocity == Vector3.zero)
             agent.SetDestination(transform.position + new Vector3(7 * Random.Range(-1f, 1.1f), 0, 7 * Random.Range(-1f, 1.1f)) );
 
-        
 
+        
 
         int finalmask = ~((1 << 10) | (1 << 11)); //create layermask for player and enemy and invert it
         if (Vector3.Distance(transform.position, player.transform.position) <= viewDistance && !Physics.Linecast(transform.position, player.transform.position, finalmask))
@@ -130,12 +132,12 @@ public class Enemy : MonoBehaviour
             //Vector3 targetDir = player.transform.position - transform.position;
             //float angle = Mathf.Rad2Deg * Mathf.Atan(targetDir.x / targetDir.z);
             //Debug.Log("angle: " + angle + "ENEMY ANGLE " + transform.rotation.eulerAngles.y);
-
+            
             Vector3 point0 = transform.position;
-            Vector3 point1 = transform.position + (viewDistance * new Vector3(-Mathf.Cos(45), 0, Mathf.Sin(45)));
-            Vector3 point2 = transform.position + (viewDistance * new Vector3(Mathf.Cos(45), 0, Mathf.Sin(45)));
-            if(IsPointInTriangle(player.transform.position,point0,point1,point2))
-                GetComponent<MeshRenderer>().material.color = Color.black;
+            Vector3 point1 = transform.position + (viewDistance * new Vector3(-Mathf.Cos(FOV + lookDirection), 0, Mathf.Sin(FOV + lookDirection)));
+            Vector3 point2 = transform.position + (viewDistance * new Vector3(Mathf.Cos(FOV - lookDirection), 0, Mathf.Sin(FOV - lookDirection)));
+            if (IsPointInTriangle(player.transform.position, point0, point1, point2))
+                status = AttentionStatus.Battle;
 
 
         }
@@ -146,15 +148,14 @@ public class Enemy : MonoBehaviour
     {
         Gizmos.color = Color.white;
         Vector3 targetDir = player.transform.position - transform.position;
-        Gizmos.DrawLine(transform.position, transform.position + new Vector3(targetDir.x,0,0));
+        //Gizmos.DrawLine(transform.position, transform.position + new Vector3(targetDir.x,0,0));
         //Gizmos.DrawLine(transform.position + new Vector3(targetDir.x, 0, 0), transform.position + new Vector3(targetDir.x, 0, 0) + new Vector3(0,0,targetDir.z));
         //Gizmos.DrawLine(transform.position, transform.position + Vector3.right);
         //Gizmos.DrawLine(transform.position, player.transform.position);
 
 
-        Gizmos.DrawLine(transform.position, transform.position + (viewDistance * new Vector3(Mathf.Cos(45),0,Mathf.Sin(45))));
-        Gizmos.DrawLine(transform.position, transform.position + (viewDistance * new Vector3(-Mathf.Cos(45),0,Mathf.Sin(45))));
-        Gizmos.DrawLine(transform.position + (viewDistance * new Vector3(-Mathf.Cos(45), 0, Mathf.Sin(45))), transform.position + (viewDistance * new Vector3(-Mathf.Cos(45),0,Mathf.Sin(45))));
+        Gizmos.DrawLine(transform.position, transform.position + (viewDistance * new Vector3(Mathf.Cos(FOV - lookDirection),0,Mathf.Sin(FOV - lookDirection))));
+        Gizmos.DrawLine(transform.position, transform.position + (viewDistance * new Vector3(-Mathf.Cos(FOV + lookDirection),0,Mathf.Sin(FOV + lookDirection))));
         
     }
     public virtual void BattleMode()
@@ -176,10 +177,10 @@ public class Enemy : MonoBehaviour
     {
         actualSpeed = speed;
         agent.updateRotation = true;
-        agent.SetDestination(lastNoiseLocation);
+        agent.SetDestination(lastNoiseLocation + new Vector3(Random.Range(-3f,3f),0, Random.Range(-3f,3f)));
 
         int finalmask = ~((1 << 10) | (1 << 11)); //create layermask for player and enemy and invert it
-        if (Vector3.Distance(transform.position, player.transform.position) <=  viewDistance && !Physics.Linecast(transform.position, player.transform.position, finalmask))
+        if (Vector3.Distance(transform.position, player.transform.position) <=  viewDistance * 2 && !Physics.Linecast(transform.position, player.transform.position, finalmask))
         {
             status = AttentionStatus.Battle;
         }
@@ -195,7 +196,11 @@ public class Enemy : MonoBehaviour
     {
         health -= amount;
         if (health <= 0)
+        {
+            if (GetComponent<EnemyGUI>() != null)
+                Destroy(GetComponent<EnemyGUI>().ui);
             Destroy(gameObject);
+        }
 
         Debug.Log($"Damaged: {amount}hp [{health}/{maxHealth}]");
     }

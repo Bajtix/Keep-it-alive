@@ -56,11 +56,14 @@ public class Bullet : MonoBehaviour
         if (lastTime < time)
             Destroy(gameObject);
         transform.Translate(Vector3.forward * Time.deltaTime * speed,Space.Self);
+        Utils.Sound(3, transform.position);
     }
 
 
     private void OnCollisionEnter(Collision collision)
     {
+
+        Utils.Sound(3, transform.position);
         if (collision.collider.tag == "Enemy")
             collision.collider.GetComponent<Enemy>().Damaged(damage);
 

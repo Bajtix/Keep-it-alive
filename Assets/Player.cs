@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
@@ -20,9 +21,13 @@ public class Player : MonoBehaviour
     public float maxHp = 50;
 
     public GameObject gfx;
+    public Transform head;
+    public Transform spine;
 
 
     public Weapon weapon;
+
+    public Animator animator;
 
     [NonSerialized]
     public bool reloading;
@@ -57,21 +62,33 @@ public class Player : MonoBehaviour
         RaycastHit hit;
         Physics.Raycast(r, out hit);
         mousePoint = hit.point;
-        mousepointFlattened = new Vector3(mousePoint.x, transform.position.y, mousePoint.z);
-        gfx.transform.LookAt(mousepointFlattened,transform.up);
+        mousepointFlattened = new Vector3(mousePoint.x, gfx.transform.position.y, mousePoint.z);
+        gfx.transform.LookAt(new Vector3(
+            gfx.transform.position.x + Input.GetAxis("Horizontal"),
+            gfx.transform.position.y,
+            gfx.transform.position.z + Input.GetAxis("Vertical")
+            ));
+        
+
+
+
+        if(!Input.GetButton("Fire1"))
+            animator.SetBool("Aiming", false);
 
         if (Input.GetButton("Fire1"))
+        {
+            gfx.transform.LookAt(mousepointFlattened);
             Shoot();
+        }
         if (Input.GetButtonDown("Fire2"))
-            Reload();
+            Reload();   
 
         UpdateGUI();
 
-        Debug.Log("Actual Speed:" + actualSpeed);
         Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * Time.deltaTime * actualSpeed;
         if (!controller.isGrounded) movement.y = -1; else movement.y = 0;
         controller.Move(movement);
-
+        animator.SetFloat("Speed", Mathf.Abs(movement.x * 50) + Mathf.Abs(movement.z * 50));
         shootCooldown -= Time.deltaTime;
     }
 
@@ -89,9 +106,11 @@ public class Player : MonoBehaviour
 
         if (shootCooldown < 0)
         {
+            animator.SetBool("Aiming", true);
+            animator.SetBool("Reload", false);
             shootCooldown = weapon.fireRate;
-            Sound(10);
-            Bullet.Shoot(transform.position, gfx.transform.localRotation, weapon, Bullet.BulletType.Friendly);
+            Utils.Sound(weapon.loudness,transform.position);
+            Bullet.Shoot(transform.position, head.rotation, weapon, Bullet.BulletType.Friendly);
             reloading = false;
             ammoLeft--;
             if (ammoLeft <= 0)
@@ -104,6 +123,8 @@ public class Player : MonoBehaviour
 
     private void Reload()
     {
+        animator.SetBool("Aiming", false);
+        animator.SetBool("Reload",true);
         if (!reloading)
         {
             Debug.Log("Reloading");
@@ -119,16 +140,6 @@ public class Player : MonoBehaviour
         hp -= amount;
     }
 
-    public void Sound(float loudness)
-    {
-        foreach(GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
-        {
-            int finalmask = ~((1 << 10) | (1 << 11)); //create layermask for player and enemy and invert it
-            if (Vector3.Distance(enemy.transform.position,transform.position) <= loudness && !Physics.Linecast(transform.position, enemy.transform.position, finalmask))
-            {
-                enemy.GetComponent<Enemy>().lastNoiseLocation = transform.position;
-                enemy.GetComponent<Enemy>().Heard();
-            }
-        }
-    }
+    
+
 }

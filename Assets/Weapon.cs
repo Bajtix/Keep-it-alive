@@ -12,6 +12,7 @@ public class Weapon : ScriptableObject
     public float speedDown;
     public float muzzleSize;
     public int bulletCount = 1;
+    public float loudness;
 
     public float bulletSpeed;
     public float bulletDamage;

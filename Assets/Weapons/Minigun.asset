@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Minigun
   ammo: 360
-  fireRate: 0.1
+  fireRate: 0.01
   reloadTime: 10
   speedDown: 3
   muzzleSize: 5
-  bulletCount: 2
+  bulletCount: 4
+  loudness: 100
   bulletSpeed: 10
   bulletDamage: 1
   bulletLastTime: 3
