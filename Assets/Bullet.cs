@@ -77,6 +77,7 @@ public class Bullet : MonoBehaviour
     {
         for (int i = 0; i < from.bulletCount; i++)
         {
+            CameraController.instance.CameraShake(0.1f / Time.deltaTime,0.01f);
             Bullet b = Instantiate(from.bullet, position + new Vector3(0.1f, 0.1f, 0.1f) * Random.Range(-from.muzzleSize, from.muzzleSize), direction * Quaternion.Euler(new Vector3(0f, 10f, 0f) * Random.Range(-from.muzzleSize, from.muzzleSize))).GetComponent<Bullet>();
             b.damage = from.bulletDamage;
             b.speed = from.bulletSpeed;

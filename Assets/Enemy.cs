@@ -23,6 +23,10 @@ public class Enemy : MonoBehaviour
     public float viewDistance = 20;
     public float FOV = 60;
 
+    public GameObject ragdoll;
+
+    public Transform weaponPos;
+
     [NonSerialized]
     public Vector3 lastNoiseLocation;
 
@@ -34,6 +38,8 @@ public class Enemy : MonoBehaviour
     public float actualSpeed;
     [NonSerialized]
     public bool reloading;
+
+    private bool alive = true;
 
     public AttentionStatus status = AttentionStatus.Wander;
 
@@ -54,6 +60,8 @@ public class Enemy : MonoBehaviour
         health = maxHealth;
         ammo = weapon.ammo;
         player = Player.instance.gameObject;
+        Instantiate(weapon.model, weaponPos);
+
     }
 
     private void Update()
@@ -191,18 +199,27 @@ public class Enemy : MonoBehaviour
         if(status != AttentionStatus.Battle)
             status = AttentionStatus.Attention;
     }
-
+    
     public virtual void Damaged(float amount)
     {
         health -= amount;
         if (health <= 0)
         {
+            Debug.Log("Death");
+            if(alive)
+                Instantiate(ragdoll, transform.position, transform.rotation);
+            alive = false;
             if (GetComponent<EnemyGUI>() != null)
                 Destroy(GetComponent<EnemyGUI>().ui);
             Destroy(gameObject);
         }
 
         Debug.Log($"Damaged: {amount}hp [{health}/{maxHealth}]");
+    }
+
+    public void SpawnRagdollOfSelf()
+    {
+
     }
 
     public void LookAt()

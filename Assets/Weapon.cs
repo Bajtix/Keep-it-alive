@@ -20,4 +20,6 @@ public class Weapon : ScriptableObject
 
     public GameObject bullet;
 
+    public GameObject model;
+
 }

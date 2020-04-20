@@ -15,9 +15,13 @@ public class WorldManager : MonoBehaviour
 
     public GameObject[] spawningObjects;
     public GameObject[] wallObjects;
+    public GameObject[] enemyObjects;
+    public GameObject[] obstacleObjects;
 
     public int objectDensity;
     public int wallObjectDensity;
+
+    public GameObject explosionEffect;
 
     private void Awake()
     {
@@ -65,13 +69,6 @@ public class WorldManager : MonoBehaviour
             r.Generate(direction, NmyRoomX, NmyRoomY);
             CameraController.instance.targetRoomPosition = rooms[myRoomX, myRoomY].transform;
             rooms[NmyRoomX, NmyRoomY] = r;
-            NavMeshData data = NavMeshBuilder.BuildNavMeshData(
-                NavMesh.CreateSettings(),
-                new List<NavMeshBuildSource>() { },
-                new Bounds(new Vector3(0, 0, 0), new Vector3(1000, 10, 1000)),
-                new Vector3(0, 0, 0),
-                Quaternion.identity
-                );
             
         }
         else
@@ -108,6 +105,8 @@ public class WorldManager : MonoBehaviour
 
         GenFloorObjects(r);
         GenWallDecor(r);
+        SpawnEnemies(r);
+        GenObstacleObjects(r);
     }
 
     private void GenFloorObjects(Room r)
@@ -127,8 +126,45 @@ public class WorldManager : MonoBehaviour
         }
     }
 
+    private void GenObstacleObjects(Room r)
+    {
+        int randomCount = Random.Range(0,5);
+        for (int i = 0; i < randomCount; i++)
+        {
+            GameObject selected = null;
+            while (selected == null)
+                selected = obstacleObjects[Random.Range(0, obstacleObjects.Length)];
+            Vector3 randomPos = new Vector3(
+                Random.Range(-20f, 20f),
+                0,
+                Random.Range(-12F, 12f)
+                );
+            if (r == null) return;
+            Instantiate(selected, r.transform.position + randomPos, selected.transform.rotation);
+        }
+    }
+
+    private void SpawnEnemies(Room r)
+    {
+        int randomCount = Random.Range(0, 10);
+        for (int i = 0; i < randomCount; i++)
+        {
+            GameObject selected = null;
+            while (selected == null)
+                selected = enemyObjects[Random.Range(0, enemyObjects.Length)];
+            Vector3 randomPos = new Vector3(
+                Random.Range(-20f, 20f),
+                0,
+                Random.Range(-12F, 12f)
+                );
+            if (r == null) return;
+            Instantiate(selected, r.transform.position + randomPos, selected.transform.rotation);
+        }
+    }
+
     private void GenWallDecor(Room r)
     {
+        
         for (int i = 0; i < wallObjectDensity; i++)
         {
             GameObject selected = null;

@@ -21,7 +21,7 @@ public class GUIManager : MonoBehaviour
     public void UpdateGUI()
     {
         if (!Player.instance.reloading)
-            ammo.text = $"{Player.instance.ammoLeft}/{Player.instance.weapon.ammo}";
+            ammo.text = $"{Player.instance.ammoLeft} : {Player.instance.weapon.ammo}";
         else
         {
             if (Player.instance.shootCooldown > 0)

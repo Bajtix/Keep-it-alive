@@ -29,6 +29,8 @@ public class Player : MonoBehaviour
 
     public Animator animator;
 
+    public Transform weaponHolder;
+
     [NonSerialized]
     public bool reloading;
     [NonSerialized]
@@ -51,6 +53,7 @@ public class Player : MonoBehaviour
         hp = maxHp;
         ammoLeft = weapon.ammo;
         actualSpeed = speed;
+        Instantiate(weapon.model, weaponHolder);
     }
 
     private void Update()
@@ -71,8 +74,8 @@ public class Player : MonoBehaviour
         
 
 
-
-        if(!Input.GetButton("Fire1"))
+        if(shootCooldown < 0.1f) animator.SetBool("Reload", false);
+        if (!Input.GetButton("Fire1"))
             animator.SetBool("Aiming", false);
 
         if (Input.GetButton("Fire1"))
@@ -80,7 +83,7 @@ public class Player : MonoBehaviour
             gfx.transform.LookAt(mousepointFlattened);
             Shoot();
         }
-        if (Input.GetButtonDown("Fire2"))
+        if (Input.GetButtonDown("Reload"))
             Reload();   
 
         UpdateGUI();
@@ -88,7 +91,7 @@ public class Player : MonoBehaviour
         Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * Time.deltaTime * actualSpeed;
         if (!controller.isGrounded) movement.y = -1; else movement.y = 0;
         controller.Move(movement);
-        animator.SetFloat("Speed", Mathf.Abs(movement.x * 50) + Mathf.Abs(movement.z * 50));
+        animator.SetFloat("Speed", Mathf.Abs(movement.x * 4 / Time.deltaTime) + Mathf.Abs(movement.z * 4 / Time.deltaTime));
         shootCooldown -= Time.deltaTime;
     }
 
@@ -102,15 +105,15 @@ public class Player : MonoBehaviour
         Debug.Log("Shoot called");
         
         if(!reloading)
-            actualSpeed = speed - weapon.speedDown;
+            actualSpeed = speed - weapon.speedDown * Time.deltaTime / 0.03f;
 
         if (shootCooldown < 0)
         {
             animator.SetBool("Aiming", true);
-            animator.SetBool("Reload", false);
+            
             shootCooldown = weapon.fireRate;
             Utils.Sound(weapon.loudness,transform.position);
-            Bullet.Shoot(transform.position, head.rotation, weapon, Bullet.BulletType.Friendly);
+            Bullet.Shoot(weaponHolder.position, gfx.transform.rotation, weapon, Bullet.BulletType.Friendly);
             reloading = false;
             ammoLeft--;
             if (ammoLeft <= 0)

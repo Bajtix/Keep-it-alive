@@ -25,9 +25,24 @@ public class CameraController : MonoBehaviour
     float lerp = 0;
     public float speed = 10;
 
+    private float shakeTimeout;
+    private float shakeStrength;
+    private Vector3 shakePos = Vector3.zero;
+
     private void Update()
     {
-        Vector3 pos = Vector3.Lerp(roomPosition.position, targetRoomPosition.position, lerp);
+        shakeTimeout--;
+        if (shakeTimeout > 0)
+        {
+            shakePos = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * shakeStrength;
+        }
+        else
+        {
+            shakePos = Vector3.zero;
+            shakeStrength = 0;
+        }
+
+        Vector3 pos = Vector3.Lerp(roomPosition.position, targetRoomPosition.position, lerp) + shakePos;
         if(targetRoomPosition.position != roomPosition.position)
         {
             lerp += speed * Time.deltaTime;
@@ -38,5 +53,11 @@ public class CameraController : MonoBehaviour
             lerp = 0;
         }
         transform.position = pos + ((tracked.position - pos) * 0.5f) + offset;
+    }
+
+    public void CameraShake(float timeout, float strength = 0.2f)
+    {
+        shakeTimeout = timeout;
+        shakeStrength += strength;
     }
 }

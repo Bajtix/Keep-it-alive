@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 3441171194795414306}
   m_Layer: 0
   m_Name: Table 2
-  m_TagString: Env
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -6478536213147159724, guid: 911e0a6b8b5a06f4c9ed914320deb476, type: 3}
+  - {fileID: 2100000, guid: 13361fac5298fe34fb3d72ac2faf8291, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -111,8 +111,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6875, y: 0.625, z: 0.6875}
-  m_Center: {x: -0.0014347136, y: 0.2844032, z: -0.043988675}
+  m_Size: {x: 0.6875, y: 0.52114177, z: 0.6875}
+  m_Center: {x: -0.0014347136, y: 0.23247409, z: -0.043988675}
 --- !u!54 &3441171194795414306
 Rigidbody:
   m_ObjectHideFlags: 0

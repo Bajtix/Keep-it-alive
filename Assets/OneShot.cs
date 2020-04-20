@@ -32,7 +32,7 @@ public class OneShot : Enemy
     {
         agent.stoppingDistance = 1;
         GameObject closest = null;
-        float lastDist = 99999;
+        float lastDist = 18;
         float newDist = 0;
         foreach (GameObject g in GameObject.FindGameObjectsWithTag("Env"))
         {
@@ -43,6 +43,12 @@ public class OneShot : Enemy
                 closest = g;
             }
         }
-        agent.destination = closest.transform.position;
+        if (closest == null || lastDist == 18)
+        {
+            Utils.Explode(transform.position, 4, 20);
+            Debug.LogWarning("Explosion");
+        }
+        else
+            agent.destination = closest.transform.position;
     }
 }
