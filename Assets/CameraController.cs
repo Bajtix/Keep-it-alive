@@ -8,12 +8,21 @@ public class CameraController : MonoBehaviour
 
     public static CameraController instance;
 
+    public Transform backup;
+
     private void Awake()
     {
-        if (instance == null)
+        if (instance != null)
+        {
+            Destroy(instance);
             instance = this;
+        }
         else
-            Destroy(this);
+            instance = this;
+
+        targetRoomPosition = Room.starterRoom.transform;
+        roomPosition = backup;
+        lerp = 0f;
     }
 
     public Transform tracked;
@@ -43,7 +52,7 @@ public class CameraController : MonoBehaviour
         }
 
         Vector3 pos = Vector3.Lerp(roomPosition.position, targetRoomPosition.position, lerp) + shakePos;
-        if(targetRoomPosition.position != roomPosition.position)
+        if (targetRoomPosition.position != roomPosition.position)
         {
             lerp += speed * Time.deltaTime;
         }

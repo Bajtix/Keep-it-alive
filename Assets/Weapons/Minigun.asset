@@ -24,3 +24,5 @@ MonoBehaviour:
   bulletDamage: 1
   bulletLastTime: 3
   bullet: {fileID: 4236822026102242758, guid: 2569cd90124f02d4b99183aec98f5f6d, type: 3}
+  model: {fileID: 0}
+  id: 3

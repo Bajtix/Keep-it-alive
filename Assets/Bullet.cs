@@ -64,6 +64,11 @@ public class Bullet : MonoBehaviour
     {
 
         Utils.Sound(3, transform.position);
+
+        if(collision.collider.GetComponent<ShootReactor>() != null)
+            collision.collider.GetComponent<ShootReactor>().OnShoot();
+
+
         if (collision.collider.tag == "Enemy")
             collision.collider.GetComponent<Enemy>().Damaged(damage);
 

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using UnityEngine.AI;
+using OdinSerializer;
+using System.IO;
 
 public class WorldManager : MonoBehaviour
 {
@@ -23,16 +25,39 @@ public class WorldManager : MonoBehaviour
 
     public GameObject explosionEffect;
 
+    public List<GameObject> dictionary;
+
+    public Weapon[] tempWeaponArray;
+
     private void Awake()
     {
         rooms = new Room[1000,1000];
-        if (instance == null)
+        if (instance != this)
+        {
+            Destroy(instance);
             instance = this;
+        }
         else
-            Destroy(this);
+            instance = this;
 
     }
 
+    private void Start()
+    {
+        if (World.load)
+            LoadWorld();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.H))
+            SaveWorld();
+
+        if (Input.GetKeyDown(KeyCode.G))
+            LoadWorld();
+
+        World.UpdateTime();
+    }
     public void CreateRoom(Vector3 position,int direction, int myRoomX, int myRoomY)
     {
 
@@ -122,7 +147,7 @@ public class WorldManager : MonoBehaviour
                 Random.Range(-12F, 12f)
                 );
             if (r == null) return;
-            Instantiate(selected, r.transform.position + randomPos, selected.transform.rotation); 
+            r.AddObjectToRegister(Instantiate(selected, r.transform.position + randomPos, selected.transform.rotation)); 
         }
     }
 
@@ -140,7 +165,7 @@ public class WorldManager : MonoBehaviour
                 Random.Range(-12F, 12f)
                 );
             if (r == null) return;
-            Instantiate(selected, r.transform.position + randomPos, selected.transform.rotation);
+            r.AddObjectToRegister(Instantiate(selected, r.transform.position + randomPos, selected.transform.rotation));
         }
     }
 
@@ -158,7 +183,7 @@ public class WorldManager : MonoBehaviour
                 Random.Range(-12F, 12f)
                 );
             if (r == null) return;
-            Instantiate(selected, r.transform.position + randomPos, selected.transform.rotation);
+            r.AddObjectToRegister(Instantiate(selected, r.transform.position + randomPos, selected.transform.rotation));
         }
     }
 
@@ -227,5 +252,73 @@ public class WorldManager : MonoBehaviour
                 r.doors[2].physical.SetActive(true);
             }
         }
+    }
+
+    
+    public void SaveWorld()
+    {
+        Directory.CreateDirectory(Application.persistentDataPath + "/world");
+        string dataPath = Application.persistentDataPath + "/world/";
+        foreach (Room room in rooms)
+        {
+            if (room != null)
+            {
+                if (!(room.myRoomX == 500 && room.myRoomY == 500))
+                {
+                    byte[] file = SerializationUtility.SerializeValue(room.Save(), DataFormat.JSON);
+                    /*StreamWriter writer = new StreamWriter(dataPath + room.myRoomX + "_" + room.myRoomY + ".room");
+                    writer.Write(file);
+                    writer.Dispose();*/
+                    File.WriteAllBytes(dataPath + room.myRoomX + "_" + room.myRoomY + ".room", file);
+                }
+            }
+        }
+        byte[] winfofile = SerializationUtility.SerializeValue(WorldStatus.GetCurrentStatus(), DataFormat.JSON);
+        /*StreamWriter winfowriter = new StreamWriter(dataPath + "world.info");
+        winfowriter.Write(winfofile);
+        winfowriter.Dispose();*/
+        File.WriteAllBytes(dataPath + "world.info", winfofile);
+    }
+
+    public void LoadWorld()
+    {
+        rooms[500, 500] = Room.starterRoom;
+        
+        string dataPath = Application.persistentDataPath + "/world/";
+        foreach(string path in Directory.GetFiles(dataPath,"*.room"))
+        {
+            string roomPosTitle = Path.GetFileNameWithoutExtension(path);
+            int posX = int.Parse(roomPosTitle.Split('_')[0]);
+            int posY = int.Parse(roomPosTitle.Split('_')[1]);
+            Room genr = Instantiate(roomPrefab, new Vector3((posX * 52) - 26000, 0, 40000 - (posY * 40) - 20000), Quaternion.identity).GetComponent<Room>();
+            byte[] file = File.ReadAllBytes(path);
+            
+            Room.RoomInfo info = SerializationUtility.DeserializeValue<Room.RoomInfo>(file, DataFormat.JSON);
+            WorldObject[] worldObjects = info.objs;
+            genr.myRoomX = posX;
+            genr.myRoomY = posY;
+            genr.doors[0].physical.SetActive(info.doors[0]);
+            genr.doors[1].physical.SetActive(info.doors[1]);
+            genr.doors[2].physical.SetActive(info.doors[2]);
+            genr.doors[3].physical.SetActive(info.doors[3]);
+            rooms[posX, posY] = genr;
+
+            
+            foreach (WorldObject item in worldObjects)
+            {             
+                GameObject g = Instantiate(dictionary[item.id], new Vector3(item.x, item.y, item.z), new Quaternion(item.rotX, item.rotY, item.rotZ, item.rotW));
+                genr.AddObjectToRegister(g);
+                if (g.GetComponent<RandomRotation>() != null) Destroy(g.GetComponent<RandomRotation>());
+            }
+            byte[] winfofile = File.ReadAllBytes(dataPath + "world.info");
+            WorldStatus status = SerializationUtility.DeserializeValue<WorldStatus>(winfofile, DataFormat.JSON);
+
+            World.day = status.day;
+            World.time = status.time;
+            World.fuelInGenerator = status.fuel;
+        }
+
+        CameraController.instance.targetRoomPosition = Room.starterRoom.transform;
+        CameraController.instance.roomPosition = Room.starterRoom.transform;
     }
 }

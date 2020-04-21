@@ -110,7 +110,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2399051837624358766, guid: 440a4daeab6689142b97c071a4c41f1e, type: 3}
       propertyPath: m_Name
-      value: Wall
+      value: Wall Variant 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2804679851030207938, guid: 440a4daeab6689142b97c071a4c41f1e, type: 3}
+      propertyPath: id
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8809587663057324694, guid: 440a4daeab6689142b97c071a4c41f1e, type: 3}
+      propertyPath: m_Carve
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 440a4daeab6689142b97c071a4c41f1e, type: 3}

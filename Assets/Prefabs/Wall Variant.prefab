@@ -64,6 +64,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3646058893467917993, guid: 0b227b9409bcdc8449234c87db040239, type: 3}
+      propertyPath: m_Carve
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6902025108143141186, guid: 0b227b9409bcdc8449234c87db040239, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5.7590046
@@ -110,7 +114,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7607620581296702289, guid: 0b227b9409bcdc8449234c87db040239, type: 3}
       propertyPath: m_Name
-      value: Wall
+      value: Wall Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 7941164482865449469, guid: 0b227b9409bcdc8449234c87db040239, type: 3}
+      propertyPath: id
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0b227b9409bcdc8449234c87db040239, type: 3}

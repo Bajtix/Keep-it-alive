@@ -1801,6 +1801,8 @@ GameObject:
   - component: {fileID: 4497330618372312297}
   - component: {fileID: 4497330618372312302}
   - component: {fileID: 4497330618372312296}
+  - component: {fileID: 4066366215947539597}
+  - component: {fileID: 3452578018095168259}
   m_Layer: 0
   m_Name: Drawers
   m_TagString: Untagged
@@ -1934,6 +1936,31 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0.014, y: 0.125, z: 0.54}
   m_TimeToStationary: 0.5
+--- !u!114 &4066366215947539597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5568796910147245539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8bcb5a571c22f54bb65ae0f6b2c64ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 3
+--- !u!114 &3452578018095168259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5568796910147245539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db2073c40b6c1943923e7421a1e1cba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5879614230384658100
 GameObject:
   m_ObjectHideFlags: 0

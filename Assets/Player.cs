@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
             Destroy(this);
         else
             instance = this;
+
+        weapon = World.with;
     }
 
     private CharacterController controller;
@@ -24,6 +26,7 @@ public class Player : MonoBehaviour
     public Transform head;
     public Transform spine;
 
+    public float fuelCarrying = 0;
 
     public Weapon weapon;
 
@@ -40,12 +43,16 @@ public class Player : MonoBehaviour
     [NonSerialized]
     public float hp = 0;
 
+    public int heldAmmo = 9;
+
     private float actualSpeed;
 
     private Vector3 mousePoint;
 
     [NonSerialized]
     public Vector3 mousepointFlattened;
+
+    
 
     private void Start()
     {
@@ -54,6 +61,7 @@ public class Player : MonoBehaviour
         ammoLeft = weapon.ammo;
         actualSpeed = speed;
         Instantiate(weapon.model, weaponHolder);
+        Time.timeScale = 1;
     }
 
     private void Update()
@@ -64,6 +72,18 @@ public class Player : MonoBehaviour
         Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         Physics.Raycast(r, out hit);
+        if (hit.collider != null && hit.collider.GetComponent<Interaction>() != null && Vector3.Distance(transform.position, hit.point) < hit.collider.GetComponent<Interaction>().maxDistance)
+        {
+            hit.collider.GetComponent<Interaction>().Tooltip();
+
+            if (Input.GetButton("Fire2"))
+            {
+                hit.collider.GetComponent<Interaction>().Interact();
+            }
+
+        }
+        else
+            GUIManager.instance.HideTooltip();
         mousePoint = hit.point;
         mousepointFlattened = new Vector3(mousePoint.x, gfx.transform.position.y, mousePoint.z);
         gfx.transform.LookAt(new Vector3(
@@ -71,7 +91,6 @@ public class Player : MonoBehaviour
             gfx.transform.position.y,
             gfx.transform.position.z + Input.GetAxis("Vertical")
             ));
-        
 
 
         if(shootCooldown < 0.1f) animator.SetBool("Reload", false);
@@ -84,7 +103,10 @@ public class Player : MonoBehaviour
             Shoot();
         }
         if (Input.GetButtonDown("Reload"))
-            Reload();   
+            Reload();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            GUIManager.instance.Die("Pause");
 
         UpdateGUI();
 
@@ -110,16 +132,15 @@ public class Player : MonoBehaviour
         if (shootCooldown < 0)
         {
             animator.SetBool("Aiming", true);
-            
-            shootCooldown = weapon.fireRate;
-            Utils.Sound(weapon.loudness,transform.position);
-            Bullet.Shoot(weaponHolder.position, gfx.transform.rotation, weapon, Bullet.BulletType.Friendly);
-            reloading = false;
-            ammoLeft--;
-            if (ammoLeft <= 0)
+            if (ammoLeft > 0)
             {
-                Reload();
+                shootCooldown = weapon.fireRate;
+                Utils.Sound(weapon.loudness, transform.position);
+                Bullet.Shoot(weaponHolder.position, gfx.transform.rotation, weapon, Bullet.BulletType.Friendly);
+                reloading = false;
+                ammoLeft--;
             }
+            
         }
 
     }
@@ -128,12 +149,26 @@ public class Player : MonoBehaviour
     {
         animator.SetBool("Aiming", false);
         animator.SetBool("Reload",true);
+        
         if (!reloading)
         {
-            Debug.Log("Reloading");
-            shootCooldown += weapon.reloadTime;
-            ammoLeft = weapon.ammo;
             reloading = true;
+            if (heldAmmo > 0)
+            {
+                Debug.Log("Reloading");
+                shootCooldown = weapon.reloadTime;
+                if (heldAmmo >= weapon.ammo)
+                {
+                    heldAmmo -= weapon.ammo - ammoLeft;
+                    ammoLeft = weapon.ammo;
+                }
+                else
+                {
+                    ammoLeft = heldAmmo;
+                    heldAmmo = 0;
+                }
+                
+            }
         }
     }
 
@@ -141,6 +176,13 @@ public class Player : MonoBehaviour
     {
         Debug.Log($"Player damaged by {amount} [{hp}/{maxHp}");
         hp -= amount;
+
+        if (hp < 0)
+        {
+            WorldManager.instance.SaveWorld();
+            World.load = true;
+            GUIManager.instance.Die("You died!");
+        }
     }
 
     

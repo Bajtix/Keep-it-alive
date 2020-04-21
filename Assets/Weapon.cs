@@ -22,4 +22,5 @@ public class Weapon : ScriptableObject
 
     public GameObject model;
 
+    public int id;
 }

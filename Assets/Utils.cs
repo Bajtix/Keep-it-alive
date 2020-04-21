@@ -43,6 +43,14 @@ public class Utils : MonoBehaviour
             }
         }
 
+        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            if (Vector3.Distance(position, g.transform.position) <= range)
+            {
+                g.GetComponent<Player>().Damage(damage);
+            }
+        }
+
         foreach (Collider g in Physics.OverlapSphere(position,range))
         {
             if(g.GetComponent<Rigidbody>() != null)

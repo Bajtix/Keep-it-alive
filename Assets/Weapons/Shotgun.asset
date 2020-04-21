@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Shotgun
   m_EditorClassIdentifier: 
   weaponName: Shotgun
-  ammo: 3
-  fireRate: 1
-  reloadTime: 6
+  ammo: 4
+  fireRate: 0.6
+  reloadTime: 7
   speedDown: 5
   muzzleSize: 2
   bulletCount: 16
@@ -25,3 +25,4 @@ MonoBehaviour:
   bulletLastTime: 10
   bullet: {fileID: 4236822026102242758, guid: 2569cd90124f02d4b99183aec98f5f6d, type: 3}
   model: {fileID: 5398887176411550246, guid: c63e628a40a1d6840b9c4ea73609d6f3, type: 3}
+  id: 2
